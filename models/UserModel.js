@@ -14,6 +14,16 @@ const userSchema = new mongoose.Schema({
         password: {
             type: String,
             required: true
+        },
+        name: {
+            type: String | null
+        },
+        registrationDate: {
+            type: Date,
+            default: new Date()
+        },
+        lastSeance: {
+            type: Date
         }
     }
 )
