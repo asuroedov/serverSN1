@@ -18,12 +18,13 @@ router.get('/login', controller.me)
 })*/
 
 router.get('/public', (req, res) => {
-    try {
+    /*try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
         res.status(200).json({payload: payload})
     } catch (e) {
         res.status(400).json({message: 'invalid token'})
-    }
+    }*/
+    res.status(200).json({message: 'hello'})
 })
 
 module.exports = router
