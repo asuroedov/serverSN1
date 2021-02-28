@@ -1,7 +1,7 @@
 const express = require('express')
 const mongoose = require('mongoose')
-const passport = require('passport')
 const authRoutes = require('./routes/auth')
+const profileRoutes = require('./routes/profileRoutes')
 const bodyParser = require('body-parser')
 const app = express()
 
@@ -24,6 +24,7 @@ app.use(require('cors')())
 
 
 app.use('/', authRoutes)
+app.use('/', profileRoutes)
 
 
 module.exports = app
