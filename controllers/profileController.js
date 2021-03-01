@@ -35,3 +35,9 @@ module.exports.getProfile = async (req, res) => {
     }
 
 }
+
+
+module.exports.getPhoto = async (req, res) => {
+    const base = __dirname.slice(0, __dirname.indexOf('\\'))
+    res.status(200).sendFile(base + '\\serverSN\\uploads\\img2.png')
+}
