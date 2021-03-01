@@ -67,7 +67,7 @@ module.exports.postPhoto = async (req, res) => {
             const filePath = base + `\\serverSN\\uploads\\${userId}\\` */
 
             //lin
-            const filePath = '/root/serverSN1/uploads' + candidate.userId + '/'
+            const filePath = '/root/serverSN1/uploads/' + candidate.userId + '/'
 
             const ext = path.extname(file.name)
             file.name = 'avatar' + ext
