@@ -10,7 +10,7 @@ module.exports.login = async (req, res) => {
         if(bcrypt.compareSync(req.body.password, candidate.password)){
             const token = jwt.sign({
                 login: candidate.login,
-                userId: candidate._id
+                _id: candidate._id
             }, JWT_KEY, {expiresIn: 60 * 60})
 
             res.status(200).json({resultCode: 0, message: '', data: {userId: candidate.userId, login: candidate.login, token}})

@@ -1,5 +1,6 @@
 const express = require('express')
 const mongoose = require('mongoose')
+const fileUpload = require('express-fileupload')
 const authRoutes = require('./routes/auth')
 const profileRoutes = require('./routes/profileRoutes')
 const bodyParser = require('body-parser')
@@ -20,6 +21,7 @@ app.use(require('morgan')('dev'))
 app.use(bodyParser.urlencoded({extended: true}))
 app.use(bodyParser.json())
 app.use(require('cors')())
+app.use(fileUpload({}))
 
 
 
