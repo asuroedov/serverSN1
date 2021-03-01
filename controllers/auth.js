@@ -47,7 +47,8 @@ module.exports.register = async (req, res) => {
         const user = new User({
             userId: totalUsersCount + 1,
             login: req.body.login,
-            password: bcrypt.hashSync(req.body.password, salt)
+            password: bcrypt.hashSync(req.body.password, salt),
+            photoUrl: ''
         })
 
         try {

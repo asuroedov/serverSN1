@@ -6,7 +6,7 @@ const router = express.Router()
 
 router.get(`/profile`, controller.getProfile)
 router.get(`/profile/:userId`, controller.getProfile)
-router.get(`/photo/:userId`, controller.getPhoto)
+router.get(`/photo/:photoId`, controller.getPhoto)
 router.post(`/photo`, controller.postPhoto)
 
 

@@ -29,9 +29,10 @@ module.exports.getProfile = async (req, res) => {
             candidate = await User.findOne({userId: userId})
         if (!candidate) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
 
+        console.log('photourl ' + candidate.photoUrl)
 
         res.status(200).json({resultCode: 0, message: '', data: {login: candidate.login, name: candidate.name, registrationDate: candidate.registrationDate
-            , userId: candidate.userId}})
+            , userId: candidate.userId, photoUrl: candidate.photoUrl}})
     } catch (e) {
         res.status(404).json({resultCode: 1, message: 'user not found from catch', data: {}})
     }
@@ -40,11 +41,11 @@ module.exports.getProfile = async (req, res) => {
 
 
 module.exports.getPhoto = async (req, res) => {
-    const userId = req.params.userId
-    const base = __dirname.slice(0, __dirname.indexOf('\\'))
-    //base + `\\serverSN\\uploads\\${userId}\\avatar.png`
 
-    const filePath = '/root/serverSN1/uploads/' + userId + '/avatar.png'
+    const photoId = req.params.photoId
+    const base = __dirname.slice(0, __dirname.indexOf('\\'))
+    const filePath = base + `\\serverSN\\uploads\\photos\\${photoId}.png`
+
     res.status(200).sendFile(filePath)
 }
 
@@ -61,21 +62,22 @@ module.exports.postPhoto = async (req, res) => {
             res.status(400).json({resultCode: 1, message: 'large file. max 5mb', data: {}})
         if(file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
 
-            /* win
-            const userId = candidate.userId
+            // win
             const base = __dirname.slice(0, __dirname.indexOf('\\'))
-            const filePath = base + `\\serverSN\\uploads\\${userId}\\` */
+            const filePath = base + `\\serverSN\\uploads\\photos\\`
 
             //lin
-            const filePath = '/root/serverSN1/uploads/' + candidate.userId + '/'
+            //const filePath = '/root/serverSN1/uploads/' + candidate.userId + '/'
 
+            const count = fs.readdirSync(filePath).length
             const ext = path.extname(file.name)
-            file.name = 'avatar' + ext
+            file.name = `${count + 1}` + ext
 
             await file.mv(filePath + file.name)
+            await User.findByIdAndUpdate(payload._id, {photoUrl: `/photo/${count + 1}`})
 
 
-            res.status(200)
+            res.status(200).json({resultCode: 0, message: '', data: {photoUrl: `/photo/${count + 1}`}})
         } else {
             res.status(400).json({resultCode: 1, message: 'не верный формат', data: {}})
         }

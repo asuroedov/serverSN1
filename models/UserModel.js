@@ -24,6 +24,9 @@ const userSchema = new mongoose.Schema({
         },
         lastSeance: {
             type: Date
+        },
+        photoUrl: {
+            type: String
         }
     }
 )
