@@ -44,7 +44,7 @@ module.exports.getPhoto = async (req, res) => {
     const base = __dirname.slice(0, __dirname.indexOf('\\'))
     //base + `\\serverSN\\uploads\\${userId}\\avatar.png`
 
-    const filePath = '/root/serverSN1/uploads' + userId + '/avatar.png'
+    const filePath = '/root/serverSN1/uploads/' + userId + '/avatar.png'
     res.status(200).sendFile(filePath)
 }
 
