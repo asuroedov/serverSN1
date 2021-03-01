@@ -42,9 +42,10 @@ module.exports.getProfile = async (req, res) => {
 module.exports.getPhoto = async (req, res) => {
     const userId = req.params.userId
     const base = __dirname.slice(0, __dirname.indexOf('\\'))
-    console.log('dirname ' + __dirname)
-    console.log('base ' + base)
-    res.status(200).sendFile(base + `\\serverSN\\uploads\\${userId}\\avatar.png`)
+    //base + `\\serverSN\\uploads\\${userId}\\avatar.png`
+
+    const filePath = '/root/serverSN1/uploads' + userId + '/avatar.png'
+    res.status(200).sendFile(filePath)
 }
 
 module.exports.postPhoto = async (req, res) => {
@@ -60,13 +61,13 @@ module.exports.postPhoto = async (req, res) => {
             res.status(400).json({resultCode: 1, message: 'large file. max 5mb', data: {}})
         if(file.mimetype === 'image/png' || file.mimetype === 'image/jpeg') {
 
+            /* win
             const userId = candidate.userId
             const base = __dirname.slice(0, __dirname.indexOf('\\'))
-            const filePath = base + `\\serverSN\\uploads\\${userId}\\` // todo
+            const filePath = base + `\\serverSN\\uploads\\${userId}\\` */
 
-            console.log('dirname ' + __dirname)
-            console.log('base ' + base)
-            console.log('filePath ' + filePath)
+            //lin
+            const filePath = '/root/serverSN1/uploads' + candidate.userId + '/'
 
             const ext = path.extname(file.name)
             file.name = 'avatar' + ext
