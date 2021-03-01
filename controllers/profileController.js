@@ -42,6 +42,8 @@ module.exports.getProfile = async (req, res) => {
 module.exports.getPhoto = async (req, res) => {
     const userId = req.params.userId
     const base = __dirname.slice(0, __dirname.indexOf('\\'))
+    console.log('dirname ' + __dirname)
+    console.log('base ' + base)
     res.status(200).sendFile(base + `\\serverSN\\uploads\\${userId}\\avatar.png`)
 }
 
@@ -77,3 +79,4 @@ module.exports.postPhoto = async (req, res) => {
         res.status(404).json({resultCode: 1, message: 'error upload photo', data: {}})
     }
 }
+//
