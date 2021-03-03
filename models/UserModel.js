@@ -19,20 +19,22 @@ const userSchema = new mongoose.Schema({
             type: String
         },
         registrationDate: {
-            type: Date,
-            default: new Date()
+            type: Date
         },
         lastSeance: {
             type: Date
         },
         photoUrl: {
-            type: String
+            type: String,
+            default: ""
         },
         location: {
-            type: String
+            type: String,
+            default: ""
         },
         status: {
-            type: String
+            type: String,
+            default: ""
         }
 
     }

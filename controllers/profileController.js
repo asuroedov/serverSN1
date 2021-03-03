@@ -3,6 +3,7 @@ const jwt = require('jsonwebtoken')
 const path = require('path')
 const fs = require('fs')
 const JWT_KEY = require('../keys').JWT_KEY
+const { v4: uuidv4 } = require('uuid');
 
 module.exports.getProfile = async (req, res) => {
 
@@ -69,9 +70,8 @@ module.exports.postPhoto = async (req, res) => {
             //lin
             //const filePath = '/root/serverSN1/uploads/' + candidate.userId + '/'
 
-            const count = fs.readdirSync(filePath).length
             const ext = path.extname(file.name)
-            file.name = `${count + 1}` + ext
+            file.name = uuidv4() + ext
 
             await file.mv(filePath + file.name)
 
