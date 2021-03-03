@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
             required: true
         },
         name: {
-            type: String | null
+            type: String
         },
         registrationDate: {
             type: Date,
@@ -27,7 +27,14 @@ const userSchema = new mongoose.Schema({
         },
         photoUrl: {
             type: String
+        },
+        location: {
+            type: String
+        },
+        status: {
+            type: String
         }
+
     }
 )
 

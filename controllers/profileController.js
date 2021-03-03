@@ -44,7 +44,7 @@ module.exports.getPhoto = async (req, res) => {
 
     const photoId = req.params.photoId
     const base = __dirname.slice(0, __dirname.indexOf('\\'))
-    const filePath = base + `\\serverSN\\uploads\\photos\\${photoId}.png`
+    const filePath = base + `\\serverSN\\uploads\\photos\\${photoId}`
 
     res.status(200).sendFile(filePath)
 }
@@ -74,10 +74,10 @@ module.exports.postPhoto = async (req, res) => {
             file.name = `${count + 1}` + ext
 
             await file.mv(filePath + file.name)
-            await User.findByIdAndUpdate(payload._id, {photoUrl: `/photo/${count + 1}`})
 
+            await User.findByIdAndUpdate(payload._id, {photoUrl: `/photo/${file.name}`})
 
-            res.status(200).json({resultCode: 0, message: '', data: {photoUrl: `/photo/${count + 1}`}})
+            res.status(200).json({resultCode: 0, message: '', data: {photoUrl: `/photo/${file.name}`}})
         } else {
             res.status(400).json({resultCode: 1, message: 'не верный формат', data: {}})
         }
