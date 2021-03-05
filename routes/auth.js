@@ -1,6 +1,7 @@
 const express = require('express')
 const controller = require('../controllers/auth')
 //const passport = require('passport')
+const User = require('../models/UserModel')
 
 
 const jwt = require('jsonwebtoken')
@@ -17,13 +18,16 @@ router.get('/login', controller.me)
     res.status(200).json({message: 'Welcome'})
 })*/
 
-router.get('/public', (req, res) => {
+router.get('/public', async (req, res) => {
     /*try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
         res.status(200).json({payload: payload})
     } catch (e) {
         res.status(400).json({message: 'invalid token'})
     }*/
+
+    const users = await User.find().sort({userId: -1}).limit(2)
+    console.log(users)
     res.status(200).json({message: 'hello'})
 })
 
