@@ -6,8 +6,13 @@ module.exports.getUsersList = async (req, res) => {
         let pageSize = +req.query.pageSize
         if(!pageSize || pageSize < 0 || pageSize > 10) pageSize = 5
 
+        let line = req.query.queryLine
+        if(!line) line = ''
+        line = new RegExp(line, 'i')
+
         const totalCount = await User.countDocuments()
-        const users = await User.find().sort({userId: -1}).limit(pageSize)
+        const users = await User.find({login: { $regex: line }}).sort({userId: -1}).limit(pageSize)
+
         const result = []
         users.forEach(el => result.push({login: el.login, name: el.name, shortName: el.shortName, photoUrl: el.photoUrl}))
         res.status(200).json({totalCount: totalCount, data: result})
