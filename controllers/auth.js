@@ -34,7 +34,7 @@ module.exports.me = async (req, res) => {
     }
 }
 
-module.exports.register = async (req, res) => {
+module.exports.registration = async (req, res) => {
 
     const candidate = await User.findOne({login: req.body.login})
 
@@ -55,7 +55,7 @@ module.exports.register = async (req, res) => {
 
         try {
             await user.save()
-            res.status(200).json({resultCode: 0, message: '', temp: user})
+            res.status(200).json({resultCode: 0, message: '', data: {}})
         } catch (e) {
             res.status(400).json({resultCode: 1, message: 'some error'})
         }

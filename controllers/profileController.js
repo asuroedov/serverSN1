@@ -44,6 +44,25 @@ module.exports.getProfile = async (req, res) => {
 
 }
 
+module.exports.updateProfile = async (req, res) => {
+    try{
+        const payload = jwt.verify(req.headers.token, JWT_KEY)
+        const candidate = await User.findById(payload._id)
+        if (!candidate) res.status(404).json({resultCode: 1, message: 'error update profile. User not found', data: {}})
+
+        candidate.name = req.body.name
+        candidate.shortName = req.body.shortName
+        candidate.status = req.body.status
+        candidate.location = req.body.location
+
+        candidate.save()
+        res.status(200).json({resultCode: 0, message: '', data: candidate})
+
+    }catch (e){
+        res.status(400).json({resultCode: 1, message: 'updateProfile. some eror', data: {}})
+    }
+}
+
 
 module.exports.getPhoto = async (req, res) => {
 
@@ -56,7 +75,6 @@ module.exports.getPhoto = async (req, res) => {
 
 module.exports.postPhoto = async (req, res) => {
     try {
-        console.log(req.headers.token)
         const payload = jwt.verify(req.headers.token, JWT_KEY)
         const candidate = await User.findById(payload._id)
         if (!candidate) res.status(404).json({resultCode: 1, message: 'error upload photo. User not found', data: {}})

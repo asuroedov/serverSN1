@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
             type: String,
             required: true
         },
+        shortName: {
+            type: String,
+            unique: true,
+            default: ""
+        },
         name: {
             type: String
         },

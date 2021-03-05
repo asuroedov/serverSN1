@@ -10,7 +10,7 @@ const router = express.Router()
 
 
 router.post('/login', controller.login)
-router.post('/register', controller.register)
+router.post('/registration', controller.registration)
 router.get('/login', controller.me)
 
 /*router.get('/secret', passport.authenticate('jwt', {session: false}),(req, res) => {
