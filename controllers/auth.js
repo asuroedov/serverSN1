@@ -48,6 +48,8 @@ module.exports.register = async (req, res) => {
             userId: totalUsersCount + 1,
             login: req.body.login,
             password: bcrypt.hashSync(req.body.password, salt),
+            name: req.body.name,
+            registrationDate: Date.now(),
             photoUrl: ''
         })
 
