@@ -29,3 +29,21 @@ module.exports.getUsersList = async (req, res) => {
         res.status(400).json({resultCode: 1, message: 'getUsersList. some error', data: {}})
     }
 }
+
+module.exports.getUsersByIds = async (req, res) => {
+    try{
+        const {ids} = req.body
+        const p = ids.map(async el => await User.findOne({userId: el}))
+
+        const result = []
+        const users = await Promise.all(p)
+        users.forEach(el => result.push({name: el.name, photoUrl: el.photoUrl}))
+
+
+        res.status(200).json({resultCode: 0, message: '', data: {users: result}})
+
+    }catch (e) {
+        console.log(e)
+        res.status(400).json({resultCode: 1, message: 'getUsersByIds. some error', data: {}})
+    }
+}
