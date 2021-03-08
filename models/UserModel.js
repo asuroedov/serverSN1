@@ -1,5 +1,16 @@
 const mongoose = require('mongoose')
 
+
+const messageSchema = new mongoose.Schema({
+    body: {
+        type: String,
+        default: ''
+    },
+    date: {
+        type: Date
+    }
+})
+
 const userSchema = new mongoose.Schema({
         userId: {
             type: Number,
@@ -21,7 +32,8 @@ const userSchema = new mongoose.Schema({
             default: ""
         },
         name: {
-            type: String
+            type: String,
+            default: ''
         },
         registrationDate: {
             type: Date
@@ -40,6 +52,11 @@ const userSchema = new mongoose.Schema({
         status: {
             type: String,
             default: ""
+        },
+        messages: {
+            type: Map,
+            of: [messageSchema],
+            default: new Map()
         }
 
     }

@@ -37,7 +37,7 @@ module.exports.getUsersByIds = async (req, res) => {
 
         const result = []
         const users = await Promise.all(p)
-        users.forEach(el => result.push({name: el.name, photoUrl: el.photoUrl}))
+        users.forEach(el => result.push({name: el.name, photoUrl: el.photoUrl, userId: el.userId, shortName: el.shortName, login: el.login}))
 
 
         res.status(200).json({resultCode: 0, message: '', data: {users: result}})

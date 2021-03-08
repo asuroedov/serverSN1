@@ -14,10 +14,6 @@ router.post('/login', controller.login)
 router.post('/registration', controller.registration)
 router.get('/login', controller.me)
 
-/*router.get('/secret', passport.authenticate('jwt', {session: false}),(req, res) => {
-    res.status(200).json({message: 'Welcome'})
-})*/
-
 router.get('/public', async (req, res) => {
     /*try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
@@ -26,9 +22,35 @@ router.get('/public', async (req, res) => {
         res.status(400).json({message: 'invalid token'})
     }*/
 
-    const users = await User.find().sort({userId: -1}).limit(2)
-    console.log(users)
-    res.status(200).json({message: 'hello'})
+    const payload = jwt.verify(req.headers.token, JWT_KEY)
+    const user = await User.findById(payload._id)
+    user.messages.set('he', [...user.messages.get('he'), {body: req.query.message, date: Date.now()}])
+    await user.save()
+
+    console.log(user.messages)
+    res.status(200).json({messages: user.messages})
+})
+
+router.post('/public', async (req, res) => {
+
+    const payload = jwt.verify(req.headers.token, JWT_KEY)
+    const user = await User.findById(payload._id)
+
+    const {message, to} = req.body
+    console.log(to + ' ' + message)
+    console.log(user.messages.get(to.toString()))
+
+    if(!user.messages.has(to)){
+        user.messages.set(to, {body: message, date: Date.now()})
+        await user.save()
+
+        res.status(200).json({messages: user.messages})
+    }
+
+    user.messages.set(to, [...user.messages.get(to), {body: message, date: Date.now()}])
+    await user.save()
+
+    res.status(200).json({messages: user.messages})
 })
 
 module.exports = router
