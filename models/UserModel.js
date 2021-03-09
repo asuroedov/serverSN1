@@ -1,15 +1,5 @@
 const mongoose = require('mongoose')
-
-
-const messageSchema = new mongoose.Schema({
-    body: {
-        type: String,
-        default: ''
-    },
-    date: {
-        type: Date
-    }
-})
+const Message = require('./MessageModel')
 
 const userSchema = new mongoose.Schema({
         userId: {
@@ -25,11 +15,6 @@ const userSchema = new mongoose.Schema({
         password: {
             type: String,
             required: true
-        },
-        shortName: {
-            type: String,
-            unique: true,
-            default: ""
         },
         name: {
             type: String,
@@ -55,7 +40,7 @@ const userSchema = new mongoose.Schema({
         },
         messages: {
             type: Map,
-            of: [messageSchema],
+            of: [Message.schema],
             default: new Map()
         }
 

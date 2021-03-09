@@ -57,6 +57,7 @@ module.exports.registration = async (req, res) => {
             await user.save()
             res.status(200).json({resultCode: 0, message: '', data: {}})
         } catch (e) {
+            console.log(e)
             res.status(400).json({resultCode: 1, message: 'some error'})
         }
     }
