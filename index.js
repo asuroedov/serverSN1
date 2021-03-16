@@ -36,8 +36,8 @@ io.on('connection', (socket) => {
             if(!to.messages.has(from.userId.toString())) to.messages.set(from.userId.toString(), [])
             if(!from.messages.has(to.userId.toString())) from.messages.set(to.userId.toString(), [])
 
-            to.messages.set(from.userId.toString(), [...to.messages.get(from.userId.toString()), {body: message, date: Date.now()}])
-            from.messages.set(to.userId.toString(), [...from.messages.get(to.userId.toString()), {body: message, date: Date.now()}])
+            to.messages.set(from.userId.toString(), [...to.messages.get(from.userId.toString()), {body: message, date: Date.now(), isSelf: false}])
+            from.messages.set(to.userId.toString(), [...from.messages.get(to.userId.toString()), {body: message, date: Date.now(), isSelf: true}])
 
             await to.save()
             await from.save()

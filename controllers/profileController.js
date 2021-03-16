@@ -68,7 +68,7 @@ module.exports.getPhoto = async (req, res) => {
 
     const photoId = req.params.photoId
     const base = __dirname.slice(0, __dirname.indexOf('\\'))
-    const filePath = base + `\\serverSN\\uploads\\photos\\${photoId}`
+    const filePath = base + `\\react\\serverSN1\\uploads\\photos\\${photoId}`
 
     res.status(200).sendFile(filePath)
 }
@@ -87,7 +87,7 @@ module.exports.postPhoto = async (req, res) => {
 
             // win
             const base = __dirname.slice(0, __dirname.indexOf('\\'))
-            const filePath = base + `\\serverSN\\uploads\\photos\\`
+            const filePath = base + `\\react\\serverSN1\\uploads\\photos\\`
 
             //lin
             //const filePath = '/root/serverSN1/uploads/' + candidate.userId + '/'
