@@ -44,6 +44,7 @@ io.on('connection', (socket) => {
 
 
             io.to(connections.get(toUserId.toString())).emit('MESSAGE:RECEIVED', from.userId, to.messages.get(from.userId.toString()))
+            io.to(connections.get(toUserId.toString())).emit('MESSAGE:NEW')
             io.to(socket.id).emit('MESSAGE:RECEIVED', to.userId, from.messages.get(to.userId.toString()))
         }
 
@@ -63,6 +64,42 @@ io.on('connection', (socket) => {
         }
 
 
+    })
+
+    socket.on('FRIEND:WANT_ADD', async (token, toUserId) => {
+        const payload = jwt.verify(token, JWT_KEY)
+        const from = await User.findById(payload._id)
+
+        if(from){
+            const to = await User.findOne({userId: toUserId})
+
+            if(!to.inFriends) to.inFriends = []
+            if(!to.inFriends.includes(from.userId))
+                to.inFriends = [...to.inFriends, from.userId]
+
+            if(!from.outFriends) from.outFriends = []
+            from.outFriends = [...from.outFriends, to.userId]
+
+            await from.save()
+            await to.save()
+
+
+            io.to(connections.get(to.userId.toString())).emit('FRIEND:NEW', from.userId)
+        }
+
+
+    })
+
+    socket.on('FRIEND:GET_FRIENDS', async (token) => {
+        const payload = jwt.verify(token, JWT_KEY)
+        const from = await User.findById(payload._id)
+
+
+        if(from){
+            io.to(socket.id).emit('FRIEND:IN', from.inFriends)
+            io.to(socket.id).emit('FRIEND:OUT', from.outFriends)
+            io.to(socket.id).emit('FRIEND:CURRENT', from.currentFriends)
+        }
     })
 
 

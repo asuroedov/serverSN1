@@ -35,7 +35,7 @@ module.exports.getProfile = async (req, res) => {
                 {
                     login: candidate.login, name: candidate.name, registrationDate: candidate.registrationDate
                     , userId: candidate.userId, photoUrl: candidate.photoUrl, status: candidate.status,
-                    shortName: candidate.shortName, lastSeance: candidate.lastSeance, location: candidate.location
+                    lastSeance: candidate.lastSeance, location: candidate.location
                 }
         })
     } catch (e) {
@@ -51,12 +51,11 @@ module.exports.updateProfile = async (req, res) => {
         if (!candidate) res.status(404).json({resultCode: 1, message: 'error update profile. User not found', data: {}})
 
         candidate.name = req.body.name
-        candidate.shortName = req.body.shortName
         candidate.status = req.body.status
         candidate.location = req.body.location
 
         candidate.save()
-        res.status(200).json({resultCode: 0, message: '', data: candidate})
+        res.status(200).json({resultCode: 0, message: '', data: {name: candidate.name, location: candidate.location, status: candidate.status}})
 
     }catch (e){
         res.status(400).json({resultCode: 1, message: 'updateProfile. some eror', data: {}})

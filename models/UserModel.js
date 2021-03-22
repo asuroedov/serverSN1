@@ -42,6 +42,18 @@ const userSchema = new mongoose.Schema({
             type: Map,
             of: [Message.schema],
             default: new Map()
+        },
+        currentFriends: {
+            type: [Number],
+            default: []
+        },
+        outFriends: {
+            type: [Number],
+            default: []
+        },
+        inFriends: {
+            type: [Number],
+            default: []
         }
 
     }
