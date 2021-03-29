@@ -90,15 +90,47 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('FRIEND:GET_FRIENDS', async (token) => {
+    socket.on('FRIEND:GET_IN_FRIENDS', async (token) => {
+        const payload = jwt.verify(token, JWT_KEY)
+        const from = await User.findById(payload._id)
+
+        if(from){
+            const friendIn = await Promise.all(from.inFriends.map(async el => await User.findOne({userId: el})))
+
+            const resIn = []
+            friendIn.forEach(u => resIn.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
+
+            io.to(socket.id).emit('FRIEND:IN', resIn)
+        }
+    })
+
+    socket.on('FRIEND:GET_OUT_FRIENDS', async (token) => {
         const payload = jwt.verify(token, JWT_KEY)
         const from = await User.findById(payload._id)
 
 
         if(from){
-            io.to(socket.id).emit('FRIEND:IN', from.inFriends)
-            io.to(socket.id).emit('FRIEND:OUT', from.outFriends)
-            io.to(socket.id).emit('FRIEND:CURRENT', from.currentFriends)
+            const friendOut = await Promise.all(from.outFriends.map(async el => await User.findOne({userId: el})))
+
+            const resOut = []
+            friendOut.forEach(u => resOut.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
+
+            io.to(socket.id).emit('FRIEND:OUT', resOut)
+        }
+    })
+
+    socket.on('FRIEND:GET_CURRENT_FRIENDS', async (token) => {
+        const payload = jwt.verify(token, JWT_KEY)
+        const from = await User.findById(payload._id)
+
+
+        if(from){
+            const friendCurrent = await Promise.all(from.currentFriends.map(async el => await User.findOne({userId: el})))
+
+            const resCurrent = []
+            friendCurrent.forEach(u => resCurrent.push({userId: u.userId, login: u.location, name: u.name, photoUrl: u.photoUrl}))
+
+            io.to(socket.id).emit('FRIEND:CURRENT', resCurrent)
         }
     })
 
