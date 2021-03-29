@@ -21,7 +21,7 @@ io.on('connection', (socket) => {
 
     socket.on('DIALOGS:CONNECT', async (userId) => {
         const user = await User.findOne({userId: userId})
-        socket.emit('DIALOGS:CONNECTED', [...user.messages.keys()])
+        if(user) socket.emit('DIALOGS:CONNECTED', [...user.messages.keys()])
     })
 
     socket.on('MESSAGE:SEND', async (token, toUserId, message) => {
