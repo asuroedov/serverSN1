@@ -73,12 +73,14 @@ io.on('connection', (socket) => {
         if(from){
             const to = await User.findOne({userId: toUserId})
 
-            if(!to.inFriends) to.inFriends = []
-            if(!to.inFriends.includes(from.userId))
-                to.inFriends = [...to.inFriends, from.userId]
+            const date = Date.now()
+            if(!to.inFriends) to.inFriends = new Map()
+            if(!to.inFriends.has(from.userId.toString()))
+                to.inFriends.set(from.userId.toString(), date)
 
-            if(!from.outFriends) from.outFriends = []
-            from.outFriends = [...from.outFriends, to.userId]
+            if(!from.outFriends) from.outFriends = new Map()
+            if(!from.outFriends.has(to.userId.toString()))
+                from.outFriends.set(to.userId.toString(), date)
 
             await from.save()
             await to.save()
@@ -95,7 +97,7 @@ io.on('connection', (socket) => {
         const from = await User.findById(payload._id)
 
         if(from){
-            const friendIn = await Promise.all(from.inFriends.map(async el => await User.findOne({userId: el})))
+            const friendIn = await Promise.all(Array.from(from.inFriends.keys()).map(async el => await User.findOne({userId: el})))
 
             const resIn = []
             friendIn.forEach(u => resIn.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
@@ -110,7 +112,8 @@ io.on('connection', (socket) => {
 
 
         if(from){
-            const friendOut = await Promise.all(from.outFriends.map(async el => await User.findOne({userId: el})))
+            const friendOut = await Promise.all(Array.from(from.outFriends.keys()).map(async el => await User.findOne({userId: el})))
+
 
             const resOut = []
             friendOut.forEach(u => resOut.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
@@ -125,7 +128,7 @@ io.on('connection', (socket) => {
 
 
         if(from){
-            const friendCurrent = await Promise.all(from.currentFriends.map(async el => await User.findOne({userId: el})))
+            const friendCurrent = await Promise.all(Array.from(from.currentFriends.keys()).map(async el => await User.findOne({userId: el})))
 
             const resCurrent = []
             friendCurrent.forEach(u => resCurrent.push({userId: u.userId, login: u.location, name: u.name, photoUrl: u.photoUrl}))
