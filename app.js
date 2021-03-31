@@ -4,6 +4,7 @@ const fileUpload = require('express-fileupload')
 const authRoutes = require('./routes/auth')
 const profileRoutes = require('./routes/profileRoutes')
 const userRoutes = require('./routes/userRoutes')
+const friendRoutes = require('./routes/friendRoutes')
 const bodyParser = require('body-parser')
 const app = express()
 
@@ -29,6 +30,7 @@ app.use(fileUpload({}))
 app.use('/', authRoutes)
 app.use('/', profileRoutes)
 app.use('/', userRoutes)
+app.use('/', friendRoutes)
 
 
 module.exports = app

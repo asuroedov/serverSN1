@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
     res.status(200).json({message: 'working...'})
 })
 
-const connections = new Map() // [userId, socket.id]
+const connections = require('./connections') // [userId, socket.id]
 
 io.on('connection', (socket) => {
 
@@ -144,3 +144,5 @@ io.on('connection', (socket) => {
 httpServer.listen(PORT, () => {
     console.log('server started')
 })
+
+module.exports = io
