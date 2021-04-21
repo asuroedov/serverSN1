@@ -5,7 +5,7 @@ const router = express.Router()
 
 router.get(`/users`, controller.getUsersList)
 router.post(`/users`, controller.getUsersByIds)
-router.get(`/messageDate`, controller.getMessageDate)
+router.get(`/lastMessages`, controller.getLastMessages)
 
 
 

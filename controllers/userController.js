@@ -64,7 +64,6 @@ module.exports.getUsersByIds = async (req, res) => {
             lastMessages.set(el.userId.toString(), arr[arr.length - 1].date)
         })
 
-        console.log(lastMessages)
         res.status(200).json({resultCode: 0, message: '', data: {users: result, lastMessages: Object.fromEntries(lastMessages.entries())}})
 
     } catch
@@ -74,7 +73,8 @@ module.exports.getUsersByIds = async (req, res) => {
     }
 }
 
-module.exports.getMessageDate = async (req, res) => {
+
+module.exports.getLastMessages = async (req, res) => {
     try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
         const candidate = await User.findOne({login: payload.login})
@@ -82,11 +82,10 @@ module.exports.getMessageDate = async (req, res) => {
 
         const lastMessages = new Map()
 
-
         candidate.messages.forEach((value, key) => {
-            lastMessages.set(key.toString(), value[value.length - 1].date)
+            lastMessages.set(key.toString(), value[value.length - 1])
+            console.log(value[value.length - 1])
         })
-
 
         console.log(lastMessages)
         res.status(200).json({resultCode: 0, message: '', data: {lastMessages: Object.fromEntries(lastMessages.entries())}})
