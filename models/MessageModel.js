@@ -12,6 +12,10 @@ const messageSchema = new mongoose.Schema({
     isSelf: {
         type: Boolean,
         default: false
+    },
+    isRead: {
+        type: Boolean,
+        default: true
     }
 })
 

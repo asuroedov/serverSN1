@@ -73,14 +73,13 @@ io.on('connection', (socket) => {
         if(from){
             const to = await User.findOne({userId: toUserId})
 
-            const date = Date.now()
             if(!to.inFriends) to.inFriends = new Map()
             if(!to.inFriends.has(from.userId.toString()))
-                to.inFriends.set(from.userId.toString(), date)
+                to.inFriends.set(from.userId.toString(), false)
 
             if(!from.outFriends) from.outFriends = new Map()
             if(!from.outFriends.has(to.userId.toString()))
-                from.outFriends.set(to.userId.toString(), date)
+                from.outFriends.set(to.userId.toString(), false)
 
             await from.save()
             await to.save()
@@ -134,6 +133,43 @@ io.on('connection', (socket) => {
             friendCurrent.forEach(u => resCurrent.push({userId: u.userId, login: u.location, name: u.name, photoUrl: u.photoUrl}))
 
             io.to(socket.id).emit('FRIEND:CURRENT', resCurrent)
+        }
+    })
+
+    socket.on('FRIEND:DELETE', async (token, userId) => {
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const user1 = await User.findById(payload._id)
+
+            const user2 = await User.findOne({userId: userId})
+            if(user1 && user2) {
+                io.to(connections.get(user2.userId.toString())).emit('FRIEND:DELETED')
+            }
+
+        }catch (e){
+            console.log(e)
+        }
+    })
+
+    socket.on('FRIEND:SKIP', async (token, userId) => {
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const user1 = await User.findById(payload._id)
+
+            const user2 = await User.findOne({userId: userId})
+            if(user1 && user2) {
+                user1.inFriends.delete(user2.userId.toString())
+                user2.outFriends.delete(user1.userId.toString())
+
+                await user1.save()
+                await user2.save()
+
+                io.to(connections.get(user2.userId.toString())).emit('FRIEND:SKIPPED')
+                io.to(connections.get(user1.userId.toString())).emit('FRIEND:SKIPPED')
+            }
+
+        }catch (e){
+            console.log(e)
         }
     })
 

@@ -11,42 +11,62 @@ module.exports.acceptFriend = async (req, res) => {
 
     try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
-        const candidate = await User.findById(payload._id)
-        if(!candidate) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
+        const user1 = await User.findById(payload._id)
+        if(!user1) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
 
         const userId = req.body.userId
-        const user = await User.findOne({userId: userId})
-        if(!user) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
+        const user2 = await User.findOne({userId: userId})
+        if(!user2) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
 
 
-        if(!candidate.inFriends.has(userId.toString()) || !user.outFriends.has(candidate.userId.toString()))
+        if(!user1.inFriends.has(userId.toString()) || !user2.outFriends.has(user1.userId.toString()))
             res.status(400).json({resultCode: 1, message: 'application not sent', data: {}})
 
-        candidate.inFriends.delete(userId.toString())
-        user.outFriends.delete(candidate.userId.toString())
+        user1.inFriends.delete(userId.toString())
+        user2.outFriends.delete(user1.userId.toString())
 
         const date = Date.now()
-        if(!candidate.currentFriends) candidate.currentFriends = new Map()
-        if(!candidate.currentFriends.has(userId.toString()))
-            candidate.currentFriends.set(userId.toString(), date)
+        if(!user1.currentFriends) user1.currentFriends = new Map()
+        if(!user1.currentFriends.has(userId.toString()))
+            user1.currentFriends.set(userId.toString(), date)
 
-        if(!user.currentFriends) user.currentFriends = new Map()
-        if(!user.currentFriends.has(candidate.userId.toString()))
-            user.currentFriends.set(candidate.userId.toString(), date)
+        if(!user2.currentFriends) user2.currentFriends = new Map()
+        if(!user2.currentFriends.has(user1.userId.toString()))
+            user2.currentFriends.set(user1.userId.toString(), date)
 
-        await candidate.save()
-        await user.save()
+        await user1.save()
+        await user2.save()
+
+        res.status(200).json({resultCode: 0, message: '', data: {name: user2.name}})
+
+    } catch (e) {
+        res.status(404).json({resultCode: 1, message: 'from catch', data: {}})
+    }
+
+}
+
+module.exports.deleteFriend = async (req, res) => {
+
+    try {
+        const payload = jwt.verify(req.headers.token, JWT_KEY)
+        const user1 = await User.findById(payload._id)
+
+        if(!user1) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
+
+        const userId = req.query.userId
+
+        const user2 = await User.findOne({userId: userId})
+        if(!user2) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
+        res.status(400).json({})
+
+        user1.currentFriends.delete(userId.toString())
+        user2.currentFriends.delete(user1.userId.toString())
+
+        await user1.save()
+        await user2.save()
 
 
-            console.log(connections.get(userId.toString()))
-            console.log(connections.get(candidate.userId.toString()))
-
-        if(connections.has(userId.toString()))
-            io.to(connections.get(userId.toString())).emit('FRIEND:ADDED')
-        if(connections.has(candidate.userId.toString()))
-            io.to(connections.get(candidate.userId.toString())).emit('FRIEND:ADDED')
-
-        res.status(200).json({resultCode: 0, message: '', data: {}})
+        res.status(200).json({resultCode: 0, message: '', data: {name: user2.name}})
 
     } catch (e) {
         res.status(404).json({resultCode: 1, message: 'from catch', data: {}})

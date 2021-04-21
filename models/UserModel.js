@@ -50,12 +50,12 @@ const userSchema = new mongoose.Schema({
         },
         outFriends: {
             type: Map,
-            of: Date,
+            of: Boolean,
             default: new Map()
         },
         inFriends: {
             type: Map,
-            of: Date,
+            of: Boolean,
             default: new Map()
         }
 
