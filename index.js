@@ -238,6 +238,8 @@ io.on('connection', (socket) => {
             if (!observers.has(id)) observers.set(id, new Set())
             observers.set(id, observers.get(id).add(user1.userId.toString()))
         }
+
+        io.to(connections.get(user1.userId.toString())).emit('ONLINE:REFRESH', user2.userId, user2.lastSeance)
     })
 
     socket.on('ONLINE:STOP_OBSERVE', async (token, userId) => {
