@@ -30,6 +30,9 @@ module.exports.getProfile = async (req, res) => {
         if (!candidate) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
 
 
+        candidate.lastSeance = Date.now()
+        await candidate.save()
+
         res.status(200).json({
             resultCode: 0, message: '', data:
                 {

@@ -20,7 +20,7 @@ const notifySubscribers = (from) => {
     if (observers.has(from.userId.toString())) {
         const obs = [...observers.get(from.userId.toString())]
         obs.forEach(el => {
-            io.to(connections.get(el)).emit('ONLINE:REFRESH', from.lastSeance)
+            io.to(connections.get(el)).emit('ONLINE:REFRESH', from.userId, from.lastSeance)
         })
     }
 }
