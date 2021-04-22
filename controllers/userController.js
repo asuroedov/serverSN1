@@ -84,10 +84,9 @@ module.exports.getLastMessages = async (req, res) => {
 
         candidate.messages.forEach((value, key) => {
             lastMessages.set(key.toString(), value[value.length - 1])
-            console.log(value[value.length - 1])
         })
 
-        console.log(lastMessages)
+
         res.status(200).json({resultCode: 0, message: '', data: {lastMessages: Object.fromEntries(lastMessages.entries())}})
 
     } catch

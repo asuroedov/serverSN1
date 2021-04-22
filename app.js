@@ -16,6 +16,8 @@ mongoose.connect(`mongodb+srv://asuroedov:${passDB}@cluster0.ey8l8.mongodb.net/m
     })
     .catch(error => console.log(error))
 
+
+
 /*app.use(passport.initialize())
 require('./middleware/passport')(passport)*/
 

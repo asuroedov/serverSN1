@@ -53,8 +53,9 @@ module.exports.updateProfile = async (req, res) => {
         candidate.name = req.body.name
         candidate.status = req.body.status
         candidate.location = req.body.location
+        candidate.lastSeance = Date.now()
 
-        candidate.save()
+        await candidate.save()
         res.status(200).json({resultCode: 0, message: '', data: {name: candidate.name, location: candidate.location, status: candidate.status}})
 
     }catch (e){
@@ -98,6 +99,9 @@ module.exports.postPhoto = async (req, res) => {
             await file.mv(filePath + file.name)
 
             await User.findByIdAndUpdate(payload._id, {photoUrl: `/photo/${file.name}`})
+
+            candidate.lastSeance = Date.now()
+            await candidate.save()
 
             res.status(200).json({resultCode: 0, message: '', data: {photoUrl: `/photo/${file.name}`}})
         } else {

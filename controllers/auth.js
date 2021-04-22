@@ -13,6 +13,8 @@ module.exports.login = async (req, res) => {
                 _id: candidate._id
             }, JWT_KEY, {expiresIn: 60 * 60})
 
+            candidate.lastSeance = Date.now()
+            await candidate.save()
             res.status(200).json({resultCode: 0, message: '', data: {userId: candidate.userId, login: candidate.login, token}})
         }else{
             res.status(404).json({resultCode: 1, message: 'incorrect login or password'})
