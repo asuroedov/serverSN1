@@ -6,6 +6,11 @@ const JWT_KEY = require('../keys').JWT_KEY
 
 module.exports.getUsersList = async (req, res) => {
     try {
+        const payload = jwt.verify(req.headers.token, JWT_KEY)
+        const sender = await User.findOne({login: payload.login})
+        sender.lastSeance = Date.now()
+        await sender.save()
+
         let pageSize = +req.query.pageSize
         if (!pageSize || pageSize < 0 || pageSize > 10) pageSize = 5
 
