@@ -8,30 +8,15 @@ const {v4: uuidv4} = require('uuid');
 module.exports.getProfile = async (req, res) => {
 
     try {
-        let userId = null
-        let candidate = null
+        const payload = jwt.verify(req.headers.token, JWT_KEY)
+        const sender = await User.findOne({login: payload.login})
+        const candidate = req.params.userId ? await User.findOne({userId: req.params.userId})
+            : User.findOne({login: jwt.verify(req.headers.token, JWT_KEY).login})
 
-        if (req.params.userId) {
-            userId = +req.params.userId
-        } else if (req.headers.token) {
-            const payload = jwt.verify(req.headers.token, JWT_KEY)
-            candidate = await User.findOne({login: payload.login})
-            if (candidate) {
-                userId = candidate.userId
-            }
-        }
+        sender.lastSeance = Date.now()
+        await sender.save()
 
-        if (!userId) {
-            res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
-        }
-
-        if (!candidate)
-            candidate = await User.findOne({userId: userId})
         if (!candidate) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
-
-
-        candidate.lastSeance = Date.now()
-        await candidate.save()
 
         res.status(200).json({
             resultCode: 0, message: '', data:
