@@ -94,6 +94,16 @@ io.on('connection', (socket) => {
 
     })
 
+    socket.on('MESSAGE:UPDATE_DIALOG_LIST', async (token) => {
+        const payload = jwt.verify(token, JWT_KEY)
+        const user = await User.findById(payload._id)
+
+        if(user){
+            socket.emit('DIALOGS:UPDATED', [...user.messages.keys()])
+        }
+
+    })
+
     socket.on('FRIEND:WANT_ADD', async (token, toUserId) => {
         const payload = jwt.verify(token, JWT_KEY)
         const from = await User.findById(payload._id)
@@ -122,64 +132,87 @@ io.on('connection', (socket) => {
     })
 
     socket.on('FRIEND:GET_IN_FRIENDS', async (token) => {
-        const payload = jwt.verify(token, JWT_KEY)
-        const from = await User.findById(payload._id)
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const from = await User.findById(payload._id)
 
-        if (from) {
-            from.lastSeance = Date.now()
-            await from.save()
-            notifySubscribers(from)
+            if (from) {
+                from.lastSeance = Date.now()
+                await from.save()
+                notifySubscribers(from)
 
-            const friendIn = await Promise.all(Array.from(from.inFriends.keys()).map(async el => await User.findOne({userId: el})))
+                const friendIn = await Promise.all(Array.from(from.inFriends.keys()).map(async el => await User.findOne({userId: el})))
 
-            const resIn = []
-            friendIn.forEach(u => resIn.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
+                const resIn = []
+                friendIn.forEach(u => resIn.push({
+                    userId: u.userId,
+                    login: u.login,
+                    name: u.name,
+                    photoUrl: u.photoUrl
+                }))
 
-            io.to(socket.id).emit('FRIEND:IN', resIn)
+                io.to(socket.id).emit('FRIEND:IN', resIn)
+            }
+        }catch (e) {
+            
         }
     })
 
     socket.on('FRIEND:GET_OUT_FRIENDS', async (token) => {
-        const payload = jwt.verify(token, JWT_KEY)
-        const from = await User.findById(payload._id)
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const from = await User.findById(payload._id)
 
 
-        if (from) {
-            from.lastSeance = Date.now()
-            await from.save()
-            notifySubscribers(from)
+            if (from) {
+                from.lastSeance = Date.now()
+                await from.save()
+                notifySubscribers(from)
 
-            const friendOut = await Promise.all(Array.from(from.outFriends.keys()).map(async el => await User.findOne({userId: el})))
+                const friendOut = await Promise.all(Array.from(from.outFriends.keys()).map(async el => await User.findOne({userId: el})))
 
 
-            const resOut = []
-            friendOut.forEach(u => resOut.push({userId: u.userId, login: u.login, name: u.name, photoUrl: u.photoUrl}))
+                const resOut = []
+                friendOut.forEach(u => resOut.push({
+                    userId: u.userId,
+                    login: u.login,
+                    name: u.name,
+                    photoUrl: u.photoUrl
+                }))
 
-            io.to(socket.id).emit('FRIEND:OUT', resOut)
+                io.to(socket.id).emit('FRIEND:OUT', resOut)
+            }
+        }catch (e){
+
         }
     })
 
     socket.on('FRIEND:GET_CURRENT_FRIENDS', async (token) => {
-        const payload = jwt.verify(token, JWT_KEY)
-        const from = await User.findById(payload._id)
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const from = await User.findById(payload._id)
 
 
-        if (from) {
-            from.lastSeance = Date.now()
-            await from.save()
-            notifySubscribers(from)
+            if (from) {
+                from.lastSeance = Date.now()
+                await from.save()
+                notifySubscribers(from)
 
-            const friendCurrent = await Promise.all(Array.from(from.currentFriends.keys()).map(async el => await User.findOne({userId: el})))
+                const friendCurrent = await Promise.all(Array.from(from.currentFriends.keys()).map(async el => await User.findOne({userId: el})))
 
-            const resCurrent = []
-            friendCurrent.forEach(u => resCurrent.push({
-                userId: u.userId,
-                login: u.location,
-                name: u.name,
-                photoUrl: u.photoUrl
-            }))
+                const resCurrent = []
+                friendCurrent.forEach(u => resCurrent.push({
+                    userId: u.userId,
+                    login: u.location,
+                    name: u.name,
+                    photoUrl: u.photoUrl
+                }))
 
-            io.to(socket.id).emit('FRIEND:CURRENT', resCurrent)
+                io.to(socket.id).emit('FRIEND:CURRENT', resCurrent)
+
+            }
+        }catch (e) {
+            
         }
     })
 
@@ -228,18 +261,22 @@ io.on('connection', (socket) => {
     })
 
     socket.on('ONLINE:WANT_OBSERVE', async (token, userId) => {
-        const payload = jwt.verify(token, JWT_KEY)
-        const user1 = await User.findById(payload._id)
-        const user2 = await User.findOne({userId: userId})
+        try {
+            const payload = jwt.verify(token, JWT_KEY)
+            const user1 = await User.findById(payload._id)
+            const user2 = await User.findOne({userId: userId})
 
-        if (user1 && user2) {
-            const id = user2.userId.toString()
+            if (user1 && user2) {
+                const id = user2.userId.toString()
 
-            if (!observers.has(id)) observers.set(id, new Set())
-            observers.set(id, observers.get(id).add(user1.userId.toString()))
+                if (!observers.has(id)) observers.set(id, new Set())
+                observers.set(id, observers.get(id).add(user1.userId.toString()))
+            }
+
+            io.to(connections.get(user1.userId.toString())).emit('ONLINE:REFRESH', user2.userId, user2.lastSeance)
+        }catch (e) {
+            
         }
-
-        io.to(connections.get(user1.userId.toString())).emit('ONLINE:REFRESH', user2.userId, user2.lastSeance)
     })
 
     socket.on('ONLINE:STOP_OBSERVE', async (token, userId) => {

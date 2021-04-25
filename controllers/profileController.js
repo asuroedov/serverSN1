@@ -8,13 +8,16 @@ const {v4: uuidv4} = require('uuid');
 module.exports.getProfile = async (req, res) => {
 
     try {
-        const payload = jwt.verify(req.headers.token, JWT_KEY)
-        const sender = await User.findOne({login: payload.login})
+        const payload = (req.headers.token && req.headers.token !== 'null' && req.headers.token !== '') ? jwt.verify(req.headers.token, JWT_KEY) : null
+        if (payload) {
+            const sender = await User.findOne({login: payload.login})
+            sender.lastSeance = Date.now()
+            await sender.save()
+        }
+
         const candidate = req.params.userId ? await User.findOne({userId: req.params.userId})
             : User.findOne({login: jwt.verify(req.headers.token, JWT_KEY).login})
 
-        sender.lastSeance = Date.now()
-        await sender.save()
 
         if (!candidate) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
 
@@ -27,13 +30,14 @@ module.exports.getProfile = async (req, res) => {
                 }
         })
     } catch (e) {
+        console.log(e)
         res.status(404).json({resultCode: 1, message: 'user not found from catch', data: {}})
     }
 
 }
 
 module.exports.updateProfile = async (req, res) => {
-    try{
+    try {
         const payload = jwt.verify(req.headers.token, JWT_KEY)
         const candidate = await User.findById(payload._id)
         if (!candidate) res.status(404).json({resultCode: 1, message: 'error update profile. User not found', data: {}})
@@ -44,9 +48,13 @@ module.exports.updateProfile = async (req, res) => {
         candidate.lastSeance = Date.now()
 
         await candidate.save()
-        res.status(200).json({resultCode: 0, message: '', data: {name: candidate.name, location: candidate.location, status: candidate.status}})
+        res.status(200).json({
+            resultCode: 0,
+            message: '',
+            data: {name: candidate.name, location: candidate.location, status: candidate.status}
+        })
 
-    }catch (e){
+    } catch (e) {
         res.status(400).json({resultCode: 1, message: 'updateProfile. some eror', data: {}})
     }
 }

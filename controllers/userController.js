@@ -19,18 +19,22 @@ module.exports.getUsersList = async (req, res) => {
 
         let line = req.query.queryLine
         if (!line) line = ''
-        line = new RegExp(line, 'i')
+        line = line.toLowerCase()
 
-        const users = await User.find({login: {$regex: line}}).sort({userId: -1})
+        const users = await User.find().sort({userId: -1})
 
         let result = []
-        users.forEach(el => result.push({
-            login: el.login,
-            userId: el.userId,
-            name: el.name,
-            shortName: el.shortName,
-            photoUrl: el.photoUrl
-        }))
+        users.forEach(el => {
+            if (el.login.toLowerCase().startsWith(line) || el.name.toLowerCase().startsWith(line)) {
+                result.push({
+                    login: el.login,
+                    userId: el.userId,
+                    name: el.name,
+                    shortName: el.shortName,
+                    photoUrl: el.photoUrl
+                })
+            }
+        })
 
         const totalCount = result.length
         const left = (pageNumber - 1) * pageSize
@@ -69,7 +73,11 @@ module.exports.getUsersByIds = async (req, res) => {
             lastMessages.set(el.userId.toString(), arr[arr.length - 1].date)
         })
 
-        res.status(200).json({resultCode: 0, message: '', data: {users: result, lastMessages: Object.fromEntries(lastMessages.entries())}})
+        res.status(200).json({
+            resultCode: 0,
+            message: '',
+            data: {users: result, lastMessages: Object.fromEntries(lastMessages.entries())}
+        })
 
     } catch
         (e) {
@@ -92,7 +100,11 @@ module.exports.getLastMessages = async (req, res) => {
         })
 
 
-        res.status(200).json({resultCode: 0, message: '', data: {lastMessages: Object.fromEntries(lastMessages.entries())}})
+        res.status(200).json({
+            resultCode: 0,
+            message: '',
+            data: {lastMessages: Object.fromEntries(lastMessages.entries())}
+        })
 
     } catch
         (e) {
