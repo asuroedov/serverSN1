@@ -243,8 +243,11 @@ io.on('connection', (socket) => {
 
             const user2 = await User.findOne({userId: userId})
             if (user1 && user2) {
-                user1.inFriends.delete(user2.userId.toString())
-                user2.outFriends.delete(user1.userId.toString())
+                if(user1.inFriends.has(user2.userId.toString())) user1.inFriends.delete(user2.userId.toString())
+                if(user1.outFriends.has(user2.userId.toString())) user1.outFriends.delete(user2.userId.toString())
+
+                if(user2.outFriends.has(user1.userId.toString())) user2.outFriends.delete(user1.userId.toString())
+                if(user2.inFriends.has(user1.userId.toString())) user2.inFriends.delete(user1.userId.toString())
 
                 await user1.save()
                 notifySubscribers(user1)
