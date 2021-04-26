@@ -47,7 +47,7 @@ module.exports.registration = async (req, res) => {
         const totalUsersCount = await User.countDocuments()
         const salt = bcrypt.genSaltSync(10)
 
-        const welcomeMessage = 'Приветственное сообщение! \n Для того, чтобы написать другому пользователю - зайдите в его профиль и нажмите на конпку "отправить сообщение" \n Это сообщение было сгенерировано автоматический'
+        const welcomeMessage = 'Приветственное сообщение! \nДля того, чтобы написать другому пользователю - зайдите в его профиль и нажмите на конпку "отправить сообщение". \nПопереписываться с самим собой можно, зайдя с другого браузера и другого аккаунта.\nЭто сообщение было сгенерировано автоматический'
         const m = new Map()
         m.set('1', [{body: welcomeMessage, isSelf: false, isRead: true, date: Date.now()}])
 
