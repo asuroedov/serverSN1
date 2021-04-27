@@ -99,12 +99,32 @@ io.on('connection', (socket) => {
 
     })
 
+    socket.on('MESSAGE:TYPING', async (toUserId) => {
+        try {
+
+            const token = socket.handshake.headers.token
+            const payload = jwt.verify(token, JWT_KEY)
+            const from = await User.findById(payload._id)
+
+            if (from) {
+                from.lastSeance = Date.now()
+                await from.save()
+                notifySubscribers(from)
+                const to = await User.findOne({userId: toUserId})
+                io.to(connections.get(to.userId.toString())).emit('MESSAGE:TYPING_FOR_YOU', from.userId)
+            }
+
+        } catch (e) {
+
+        }
+    })
+
     socket.on('MESSAGE:UPDATE_DIALOG_LIST', async () => {
         const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const user = await User.findById(payload._id)
 
-        if(user){
+        if (user) {
             socket.emit('DIALOGS:UPDATED', [...user.messages.keys()])
         }
 
@@ -161,8 +181,8 @@ io.on('connection', (socket) => {
 
                 io.to(socket.id).emit('FRIEND:IN', resIn)
             }
-        }catch (e) {
-            
+        } catch (e) {
+
         }
     })
 
@@ -191,7 +211,7 @@ io.on('connection', (socket) => {
 
                 io.to(socket.id).emit('FRIEND:OUT', resOut)
             }
-        }catch (e){
+        } catch (e) {
 
         }
     })
@@ -221,8 +241,8 @@ io.on('connection', (socket) => {
                 io.to(socket.id).emit('FRIEND:CURRENT', resCurrent)
 
             }
-        }catch (e) {
-            
+        } catch (e) {
+
         }
     })
 
@@ -255,11 +275,11 @@ io.on('connection', (socket) => {
 
             const user2 = await User.findOne({userId: userId})
             if (user1 && user2) {
-                if(user1.inFriends.has(user2.userId.toString())) user1.inFriends.delete(user2.userId.toString())
-                if(user1.outFriends.has(user2.userId.toString())) user1.outFriends.delete(user2.userId.toString())
+                if (user1.inFriends.has(user2.userId.toString())) user1.inFriends.delete(user2.userId.toString())
+                if (user1.outFriends.has(user2.userId.toString())) user1.outFriends.delete(user2.userId.toString())
 
-                if(user2.outFriends.has(user1.userId.toString())) user2.outFriends.delete(user1.userId.toString())
-                if(user2.inFriends.has(user1.userId.toString())) user2.inFriends.delete(user1.userId.toString())
+                if (user2.outFriends.has(user1.userId.toString())) user2.outFriends.delete(user1.userId.toString())
+                if (user2.inFriends.has(user1.userId.toString())) user2.inFriends.delete(user1.userId.toString())
 
                 await user1.save()
                 notifySubscribers(user1)
@@ -290,8 +310,8 @@ io.on('connection', (socket) => {
             }
 
             io.to(connections.get(user1.userId.toString())).emit('ONLINE:REFRESH', user2.userId, user2.lastSeance)
-        }catch (e) {
-            
+        } catch (e) {
+
         }
     })
 
