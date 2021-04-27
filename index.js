@@ -29,18 +29,22 @@ io.on('connection', (socket) => {
 
     connections.set(socket.handshake.query.userId, socket.id)
 
-
     socket.on('DIALOGS:CONNECT', async (userId) => {
-        const user = await User.findOne({userId: userId})
+        const token = socket.handshake.headers.token
+        const payload = jwt.verify(token, JWT_KEY)
+        const user = await User.findById(payload._id)
+
+        //const user = await User.findOne({userId: userId})
         if (user) {
-            socket.emit('DIALOGS:CONNECTED', [...user.messages.keys()])
+            io.to(socket.id).emit('DIALOGS:CONNECTED', [...user.messages.keys()])
             user.lastSeance = Date.now()
             await user.save()
             notifySubscribers(user)
         }
     })
 
-    socket.on('MESSAGE:SEND', async (token, toUserId, message) => {
+    socket.on('MESSAGE:SEND', async (toUserId, message) => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const from = await User.findById(payload._id)
 
@@ -76,7 +80,8 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('MESSAGE:GET', async (token, toUserId) => {
+    socket.on('MESSAGE:GET', async (toUserId) => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const from = await User.findById(payload._id)
 
@@ -94,7 +99,8 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('MESSAGE:UPDATE_DIALOG_LIST', async (token) => {
+    socket.on('MESSAGE:UPDATE_DIALOG_LIST', async () => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const user = await User.findById(payload._id)
 
@@ -104,7 +110,8 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('FRIEND:WANT_ADD', async (token, toUserId) => {
+    socket.on('FRIEND:WANT_ADD', async (toUserId) => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const from = await User.findById(payload._id)
 
@@ -131,8 +138,9 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('FRIEND:GET_IN_FRIENDS', async (token) => {
+    socket.on('FRIEND:GET_IN_FRIENDS', async () => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const from = await User.findById(payload._id)
 
@@ -158,8 +166,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('FRIEND:GET_OUT_FRIENDS', async (token) => {
+    socket.on('FRIEND:GET_OUT_FRIENDS', async () => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const from = await User.findById(payload._id)
 
@@ -187,8 +196,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('FRIEND:GET_CURRENT_FRIENDS', async (token) => {
+    socket.on('FRIEND:GET_CURRENT_FRIENDS', async () => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const from = await User.findById(payload._id)
 
@@ -216,8 +226,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('FRIEND:DELETE', async (token, userId) => {
+    socket.on('FRIEND:DELETE', async (userId) => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const user1 = await User.findById(payload._id)
             user1.lastSeance = Date.now()
@@ -234,8 +245,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('FRIEND:SKIP', async (token, userId) => {
+    socket.on('FRIEND:SKIP', async (userId) => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const user1 = await User.findById(payload._id)
             user1.lastSeance = Date.now()
@@ -263,8 +275,9 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('ONLINE:WANT_OBSERVE', async (token, userId) => {
+    socket.on('ONLINE:WANT_OBSERVE', async (userId) => {
         try {
+            const token = socket.handshake.headers.token
             const payload = jwt.verify(token, JWT_KEY)
             const user1 = await User.findById(payload._id)
             const user2 = await User.findOne({userId: userId})
@@ -282,7 +295,8 @@ io.on('connection', (socket) => {
         }
     })
 
-    socket.on('ONLINE:STOP_OBSERVE', async (token, userId) => {
+    socket.on('ONLINE:STOP_OBSERVE', async (userId) => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const user1 = await User.findById(payload._id)
         const user2 = await User.findOne({userId: userId})
@@ -297,7 +311,8 @@ io.on('connection', (socket) => {
 
     })
 
-    socket.on('ONLINE:NOTIFY', async (token) => {
+    socket.on('ONLINE:NOTIFY', async () => {
+        const token = socket.handshake.headers.token
         const payload = jwt.verify(token, JWT_KEY)
         const user = await User.findById(payload._id)
 
