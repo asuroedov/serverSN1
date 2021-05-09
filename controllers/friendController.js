@@ -57,7 +57,7 @@ module.exports.deleteFriend = async (req, res) => {
 
         const user2 = await User.findOne({userId: userId})
         if(!user2) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
-        res.status(400).json({})
+
 
         user1.currentFriends.delete(userId.toString())
         user2.currentFriends.delete(user1.userId.toString())
@@ -67,6 +67,27 @@ module.exports.deleteFriend = async (req, res) => {
 
 
         res.status(200).json({resultCode: 0, message: '', data: {name: user2.name}})
+
+    } catch (e) {
+        res.status(404).json({resultCode: 1, message: 'from catch', data: {}})
+    }
+
+}
+
+//друзья указанного пользователя
+module.exports.getUserFriends = async (req, res) => {
+
+    try {
+        const userId = req.query.userId
+
+        const user = await User.findOne({userId: userId})
+        if(!user) res.status(404).json({resultCode: 1, message: 'user not found', data: {}})
+
+        const ids = Array.from(user.currentFriends.keys())
+        const friends = await Promise.all(ids.map(el => User.findOne({userId: el})))
+        const result = friends.map(el => ({name: el.name, login: el.login, photoUrl: el.photoUrl, userId: el.userId, lastSeance: el.lastSeance }))
+
+        res.status(200).json({resultCode: 0, message: '', data: {friends: result}})
 
     } catch (e) {
         res.status(404).json({resultCode: 1, message: 'from catch', data: {}})
